@@ -64,6 +64,9 @@ typedef int mode_t;
 #ifdef __POSIX__
 # include <pwd.h> /* getpwnam() */
 # include <grp.h> /* getgrnam() */
+# ifndef ANDROID
+# define __REENTRANT_GRP__
+# endif
 #endif
 
 #include "node_buffer.h"
@@ -1442,9 +1445,15 @@ static uid_t uid_by_name(const char* name) {
   errno = 0;
   pp = NULL;
 
+#ifdef __REENTRANT_GRP__
   if (getpwnam_r(name, &pwd, buf, sizeof(buf), &pp) == 0 && pp != NULL) {
     return pp->pw_uid;
   }
+#else
+  if ((pp = getpwnam(name)) != NULL) {
+    return pp->pw_uid;
+  }
+#endif //__REENTRANT_GRP__
 
   return uid_not_found;
 }
@@ -1459,9 +1468,15 @@ static char* name_by_uid(uid_t uid) {
   errno = 0;
   pp = NULL;
 
+#ifdef __REENTRANT_GRP__
   if ((rc = getpwuid_r(uid, &pwd, buf, sizeof(buf), &pp)) == 0 && pp != NULL) {
     return strdup(pp->pw_name);
   }
+#else
+  if ((pp = getpwuid(uid)) != NULL) {
+    return strdup(pp->pw_name);
+  }
+#endif //__REENTRANT_GRP__
 
   if (rc == 0) {
     errno = ENOENT;
@@ -1479,9 +1494,15 @@ static gid_t gid_by_name(const char* name) {
   errno = 0;
   pp = NULL;
 
+#ifdef __REENTRANT_GRP__
   if (getgrnam_r(name, &pwd, buf, sizeof(buf), &pp) == 0 && pp != NULL) {
     return pp->gr_gid;
   }
+#else
+  if ((pp = getgrnam(name)) != NULL) {
+    return pp->gr_gid;
+  }
+#endif //__REENTRANT_GRP__
 
   return gid_not_found;
 }
@@ -1497,9 +1518,15 @@ static const char* name_by_gid(gid_t gid) {
   errno = 0;
   pp = NULL;
 
+#ifdef __REENTRANT_GRP__
   if ((rc = getgrgid_r(gid, &pwd, buf, sizeof(buf), &pp)) == 0 && pp != NULL) {
     return strdup(pp->gr_name);
   }
+#else
+  if ((pp = getgrgid(gid)) != NULL) {
+    return strdup(pp->gr_name);
+  }
+#endif //__REENTRANT_GRP__
 
   if (rc == 0) {
     errno = ENOENT;

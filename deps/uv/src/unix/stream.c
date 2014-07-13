@@ -35,6 +35,10 @@
 #include <unistd.h>
 #include <limits.h> /* IOV_MAX */
 
+#if defined(__ANDROID__)
+#define IOV_MAX 1024	/* Hacky, from bionic/libc/bionic/sysconf.cpp */
+#endif
+
 #if defined(__APPLE__)
 # include <sys/event.h>
 # include <sys/time.h>

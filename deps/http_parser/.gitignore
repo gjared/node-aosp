@@ -6,6 +6,7 @@ test_g
 test_fast
 url_parser
 *.mk
+!Android.mk
 *.Makefile
 *.so
 *.a

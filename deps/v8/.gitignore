@@ -5,6 +5,7 @@
 *.log
 *.map
 *.mk
+!Android*.mk
 *.ncb
 *.pdb
 *.pyc

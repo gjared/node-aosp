@@ -266,7 +266,7 @@ int uv_sem_trywait(uv_sem_t* sem) {
 #endif /* defined(__APPLE__) && defined(__MACH__) */
 
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__APPLE__) && defined(__MACH__) || defined(__ANDROID__)
 
 int uv_cond_init(uv_cond_t* cond) {
   if (pthread_cond_init(cond, NULL))
@@ -351,7 +351,7 @@ int uv_cond_timedwait(uv_cond_t* cond, uv_mutex_t* mutex, uint64_t timeout) {
 }
 
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__APPLE__) && defined(__MACH__) || defined(__ANDROID__)
 
 int uv_barrier_init(uv_barrier_t* barrier, unsigned int count) {
   barrier->n = count;
