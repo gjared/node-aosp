@@ -307,10 +307,21 @@ static void uv__process_child_init(uv_process_options_t options,
       }
     }
 
-    if (fd == use_fd)
+    if (fd == use_fd) {
       uv__cloexec(use_fd, 0);
-    else
-      dup2(use_fd, fd);
+    } else {
+#if defined(__ANDROID__)
+      // Hack for now, on android dup2 on fd 1 seems to
+      // trigger a fault.  Haven't tracked it down completely
+      // but at least this allows programs to exec (no stdout
+      // captured through)
+      if (fd != 1) {
+#endif
+        dup2(use_fd, fd);
+#if defined(__ANDROID__)      
+      }
+#endif
+    }
 
     if (fd <= 2)
       uv__nonblock(fd, 0);
